@@ -1,0 +1,8 @@
+{
+  "requestContext": {
+    "connectionId": "MockConnectionId123abc=",
+    "authorizer": {
+      "principalId": "emp_7890" 
+    }
+  }
+}
