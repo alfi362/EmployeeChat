@@ -18,16 +18,12 @@ function connect() {
   socket.onmessage = (event) => {
     try {
       let data = JSON.parse(event.data);
+      console.log("recived:",response)
 
       // Handle case where backend wraps response
-      if (data.body) {
-        data = JSON.parse(data.body);
+      if(response.type ==="chatMessage"){
+        displayMessage(response.data.channelId,response.data.content)
       }
-
-      console.log("Received:", data);
-
-      displayMessage(data.sender, data.message);
-
     } catch (e) {
       console.error("Error parsing message:", e);
     }
@@ -53,9 +49,10 @@ function sendMessage() {
 
   socket.send(JSON.stringify({
     action: "sendMessage",
-    sender: employeeId,
-    channel: channel,
-    message: message
+    payload:{
+      channelId:channel,
+      contend:message
+    }
   }));
 
   input.value = "";
