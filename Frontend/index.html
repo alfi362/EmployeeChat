@@ -8,19 +8,25 @@
 
 <div class="container">
   
+  <!-- Sidebar -->
   <div class="sidebar">
     <h3>Channels</h3>
-    <p># engineering</p>
-    <p># hr</p>
+    <div class="channel" onclick="switchChannel('engineering')"># engineering</div>
+    <div class="channel" onclick="switchChannel('hr')"># hr</div>
   </div>
 
+  <!-- Chat Area -->
   <div class="chat">
+    
+    <div id="header" class="header"># engineering</div>
+
     <div id="messages" class="messages"></div>
 
     <div class="input-box">
       <input type="text" id="msg" placeholder="Type message..." />
       <button onclick="sendMessage()">Send</button>
     </div>
+
   </div>
 
 </div>
