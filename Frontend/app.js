@@ -1,5 +1,5 @@
 const employeeId = prompt("Enter your employee ID");
-const channel = "engineering";
+let channel = "engineering";
 
 let socket;
 
@@ -12,26 +12,31 @@ function connect() {
   );
 
   socket.onopen = () => {
-    console.log("✅ Connected to WebSocket");
+    console.log("✅ Connected");
   };
 
   socket.onmessage = (event) => {
-    console.log("RAW:", event.data);
-
     try {
-      const data = JSON.parse(event.data);
+      let data = JSON.parse(event.data);
+
+      if (data.body) {
+        data = JSON.parse(data.body);
+      }
+
       displayMessage(data.sender, data.message);
+
     } catch {
       console.log("No backend response yet");
     }
   };
 
   socket.onclose = () => {
-    console.log("❌ Disconnected... reconnecting in 3s");
+    console.log("Reconnecting...");
     setTimeout(connect, 3000);
   };
 }
 
+/* Send message */
 function sendMessage() {
 
   const input = document.getElementById("msg");
@@ -39,7 +44,6 @@ function sendMessage() {
 
   if (!message) return;
 
-  // SEND to WebSocket (real flow)
   socket.send(JSON.stringify({
     action: "sendMessage",
     sender: employeeId,
@@ -47,14 +51,13 @@ function sendMessage() {
     message: message
   }));
 
-  // 🔥 FAKE BACKEND RESPONSE (for now)
-  setTimeout(() => {
-    displayMessage(employeeId, message);
-  }, 200);
+  // TEMP fake response
+  displayMessage(employeeId, message);
 
   input.value = "";
 }
 
+/* Display message */
 function displayMessage(sender, message) {
 
   const messagesDiv = document.getElementById("messages");
@@ -62,11 +65,22 @@ function displayMessage(sender, message) {
   const msgDiv = document.createElement("div");
   msgDiv.className = "message";
 
-  msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+  msgDiv.innerHTML = `<strong>${sender}</strong><br>${message}`;
 
   messagesDiv.appendChild(msgDiv);
-
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+/* Switch channel */
+function switchChannel(newChannel) {
+
+  channel = newChannel;
+
+  document.getElementById("header").innerText = "# " + channel;
+
+  document.getElementById("messages").innerHTML = "";
+
+  if (socket) socket.close(); // reconnect with new channel
 }
 
 connect();
