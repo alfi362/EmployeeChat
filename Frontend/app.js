@@ -16,17 +16,19 @@ function connect() {
   };
 
   socket.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    displayMessage(data.sender, data.message);
+    console.log("RAW:", event.data);
+
+    try {
+      const data = JSON.parse(event.data);
+      displayMessage(data.sender, data.message);
+    } catch {
+      console.log("No backend response yet");
+    }
   };
 
   socket.onclose = () => {
     console.log("❌ Disconnected... reconnecting in 3s");
     setTimeout(connect, 3000);
-  };
-
-  socket.onerror = (err) => {
-    console.error("⚠️ WebSocket error:", err);
   };
 }
 
@@ -37,12 +39,18 @@ function sendMessage() {
 
   if (!message) return;
 
+  // SEND to WebSocket (real flow)
   socket.send(JSON.stringify({
     action: "sendMessage",
     sender: employeeId,
     channel: channel,
     message: message
   }));
+
+  // 🔥 FAKE BACKEND RESPONSE (for now)
+  setTimeout(() => {
+    displayMessage(employeeId, message);
+  }, 200);
 
   input.value = "";
 }
