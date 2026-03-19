@@ -51,7 +51,7 @@ function sendMessage() {
     action: "sendMessage",
     payload:{
       channelId:channel,
-      contend:message
+      content:message
     }
   }));
 
