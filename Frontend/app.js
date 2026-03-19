@@ -6,11 +6,13 @@ let socket;
 function connect() {
 
   socket = new WebSocket(
-    "wss://YOUR-ENDPOINT/dev?employee_id=" + employeeId + "&channel=" + channel
+    "wss://xdqsbghjq4.execute-api.ap-south-1.amazonaws.com/dev?employee_id=" 
+    + employeeId + 
+    "&channel=" + channel
   );
 
   socket.onopen = () => {
-    console.log("Connected to WebSocket");
+    console.log("✅ Connected to WebSocket");
   };
 
   socket.onmessage = (event) => {
@@ -19,12 +21,12 @@ function connect() {
   };
 
   socket.onclose = () => {
-    console.log("Disconnected... reconnecting in 3s");
+    console.log("❌ Disconnected... reconnecting in 3s");
     setTimeout(connect, 3000);
   };
 
   socket.onerror = (err) => {
-    console.error("WebSocket error:", err);
+    console.error("⚠️ WebSocket error:", err);
   };
 }
 
