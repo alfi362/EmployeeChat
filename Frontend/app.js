@@ -19,24 +19,31 @@ function connect() {
     try {
       let data = JSON.parse(event.data);
 
+      // Handle case where backend wraps response
       if (data.body) {
         data = JSON.parse(data.body);
       }
 
+      console.log("Received:", data);
+
       displayMessage(data.sender, data.message);
 
-    } catch {
-      console.log("No backend response yet");
+    } catch (e) {
+      console.error("Error parsing message:", e);
     }
   };
 
   socket.onclose = () => {
-    console.log("Reconnecting...");
+    console.log("❌ Disconnected... reconnecting in 3s");
     setTimeout(connect, 3000);
+  };
+
+  socket.onerror = (err) => {
+    console.error("⚠️ WebSocket error:", err);
   };
 }
 
-/* Send message */
+/* SEND MESSAGE (NO FAKE RESPONSE HERE) */
 function sendMessage() {
 
   const input = document.getElementById("msg");
@@ -51,13 +58,10 @@ function sendMessage() {
     message: message
   }));
 
-  // TEMP fake response
-  displayMessage(employeeId, message);
-
   input.value = "";
 }
 
-/* Display message */
+/* DISPLAY MESSAGE */
 function displayMessage(sender, message) {
 
   const messagesDiv = document.getElementById("messages");
@@ -68,10 +72,11 @@ function displayMessage(sender, message) {
   msgDiv.innerHTML = `<strong>${sender}</strong><br>${message}`;
 
   messagesDiv.appendChild(msgDiv);
+
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-/* Switch channel */
+/* SWITCH CHANNEL */
 function switchChannel(newChannel) {
 
   channel = newChannel;
