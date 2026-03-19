@@ -17,7 +17,7 @@ function connect() {
 
   socket.onmessage = (event) => {
     try {
-      let data = JSON.parse(event.data);
+      let response = JSON.parse(event.data);
       console.log("recived:",response)
 
       // Handle case where backend wraps response
