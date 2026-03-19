@@ -1,11 +1,9 @@
 import json
 import boto3
 import time
-dynamodb = boto3.client('dynamodb', region_name='us-east-1')
-
+dynamodb = boto3.client('dynamodb', region_name='ap-south-1')
 def lambda_handler(event, context):
-    print("Connecting")
-    
+    print("Connecting")    
     try:
         connection_id = event['requestContext']['connectionId']
         authorizer = event['requestContext'].get('authorizer', {})
@@ -18,11 +16,11 @@ def lambda_handler(event, context):
         }
         
         print(f"Saving to Connection Tables: {json.dumps(item)}")
+        dynamodb.put_item(TableName='ConnectionsTable', Item=item)       #write to teh db
         return {
             'statusCode': 200,
             'body': 'Connected.'
-        }
-     
+        }  
     except Exception as e:
         print(f"Connection failed: {str(e)}")
         return {
