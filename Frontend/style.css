@@ -40,12 +40,14 @@ body {
   font-weight: bold;
 }
 
-/* Messages */
+/* Messages Container*/
 .messages {
   flex: 1;
   padding: 10px;
   overflow-y: scroll;
   background: #f4f4f4;
+  display: flex;
+  flex-direction: column; 
 }
 
 /* Message bubble */
@@ -55,6 +57,20 @@ body {
   background: white;
   border-radius: 8px;
   max-width: 60%;
+}
+
+.my-message {
+  align-self: flex-start;
+  background-color: #dcf8c6; 
+  border-bottom-left-radius: 0px; 
+  border-bottom-right-radius: 8px;
+}
+
+.other-message {
+  align-self: flex-end;
+  background-color: white;
+  border-bottom-right-radius: 0px; 
+  border-bottom-left-radius: 8px;
 }
 
 /* Input */

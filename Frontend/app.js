@@ -1,25 +1,19 @@
 const employeeId = prompt("Enter your employee ID");
 let channel = "engineering";
-
 let socket;
-
 function connect() {
-
   socket = new WebSocket(
     "wss://xdqsbghjq4.execute-api.ap-south-1.amazonaws.com/dev?employee_id=" 
     + employeeId + 
     "&channel=" + channel
   );
-
   socket.onopen = () => {
     console.log("✅ Connected");
   };
-
   socket.onmessage = (event) => {
     try {
       let response = JSON.parse(event.data);
       console.log("recived:",response)
-
       // Handle case where backend wraps response
       if(response.type ==="chatMessage"){
         displayMessage(response.data.sender,response.data.content)
@@ -61,14 +55,16 @@ function sendMessage() {
 
 /* DISPLAY MESSAGE */
 function displayMessage(sender, message) {
-
   const messagesDiv = document.getElementById("messages");
-
   const msgDiv = document.createElement("div");
-  msgDiv.className = "message";
-
-  msgDiv.innerHTML = `<strong>${sender}</strong><br>${message}`;
-
+  if(sender ===employeeId){
+    msgDiv.className="message my-message";
+    msgDiv.innerHTML = `${message}`;
+  }
+  else{
+    msgDiv.className = "message other-message";
+    msgDiv.innerHTML = `<strong>${sender}</strong><br>${message}`;
+  }
   messagesDiv.appendChild(msgDiv);
 
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
