@@ -13,6 +13,7 @@ def lambda_handler(event, context):
         payload = body.get('payload', {})
         channel_id = payload.get('channelId', 'general')
         content = payload.get('content', '')
+        sender_name =payload.get('sender','Anonymous')
         message_id = f"msg_{int(time.time() * 1000)}"
         dynamodb.put_item(             #add messages to DB
             TableName='MessagesTable',
@@ -20,6 +21,7 @@ def lambda_handler(event, context):
                 'messageId': {'S': message_id},
                 'channelId': {'S': channel_id},
                 'content': {'S': content},
+                'sender':{'S' : sender_name},
                 'timestamp': {'N': str(int(time.time()))}
             }
         )
@@ -31,7 +33,8 @@ def lambda_handler(event, context):
             "type": "chatMessage",
             "data": {
                 "channelId": channel_id,
-                "content": content
+                "content": content,
+                "sender": sender_name
             }
         })
         for item in active_connections:              # Send messages to the connected ones in the websocket

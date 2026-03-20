@@ -22,7 +22,7 @@ function connect() {
 
       // Handle case where backend wraps response
       if(response.type ==="chatMessage"){
-        displayMessage(response.data.channelId,response.data.content)
+        displayMessage(response.data.sender,response.data.content)
       }
     } catch (e) {
       console.error("Error parsing message:", e);
@@ -51,10 +51,11 @@ function sendMessage() {
     action: "sendMessage",
     payload:{
       channelId:channel,
-      content:message
+      content:message,
+      sender:employeeId
     }
   }));
-
+  displayMessage(employeeId,message)
   input.value = "";
 }
 
