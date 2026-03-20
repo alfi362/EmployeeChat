@@ -6,8 +6,8 @@ def lambda_handler(event, context):
     print("Connecting")    
     try:
         connection_id = event['requestContext']['connectionId']
-        authorizer = event['requestContext'].get('authorizer', {})
-        employee_id = authorizer.get('principalId', 'unknown_user')
+        queryparams=event.get('queryStringParameters') or {}
+        employee_id =queryparams.get('employee_id') or 'unknown_user'
         ttl_seconds = int(time.time()) + (24 * 60 * 60)
         item = {
             'connectionId': {'S': connection_id},

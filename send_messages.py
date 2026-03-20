@@ -11,9 +11,9 @@ def lambda_handler(event, context):
         apigw_client = boto3.client('apigatewaymanagementapi', endpoint_url=f"https://{domain_name}/{stage}")
         body = json.loads(event.get('body', '{}'))
         payload = body.get('payload', {})
-        channel_id = payload.get('channelId', 'general')
+        channel_id = payload.get('channelId',) or 'general'
         content = payload.get('content', '')
-        sender_name =payload.get('sender','Anonymous')
+        sender_name =payload.get('sender') or 'Anonymous'
         message_id = f"msg_{int(time.time() * 1000)}"
         dynamodb.put_item(             #add messages to DB
             TableName='MessagesTable',
