@@ -13,7 +13,7 @@ def lambda_handler(event, context):
             }
         )
         return{
-            'statuscode':200,
+            'statusCode':200,
             'body':'disconnected'
         }
     except Exception as e:

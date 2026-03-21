@@ -12,7 +12,7 @@ def lambda_handler(event, context):
         token=queryparams.get('token')
         if not token :
             print(f"no token provided")
-            return {'statuscode': 401,'body':'Unauthorised'}
+            return {'statusCode': 401,'body':'Unauthorised'}
         try:
             cognito_response = cognito.get_user(AccessToken=token)
             employee_id=cognito_response['Username']

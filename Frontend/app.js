@@ -1,43 +1,26 @@
-const COGNITO_CLIENT_ID ="29g4gnh2142vbf25b63qqon9mo"
+const REDIRECT_URI = "https://d2ez74nu99mzlf.cloudfront.net"; 
+const COGNITO_DOMAIN = "ap-south-1lb9cexihr.auth.ap-south-1.amazoncognito.com";
+const COGNITO_CLIENT_ID = "29g4gnh2142vbf25b63qqon9mo";
 let channel = "engineering";
+let employeeId = "";
+let jwtToken = "";
 let socket;
-async function login() {
-  const username = prompt("Enter your Cognito Username:");
-  const password = prompt("Enter your Password:");
-
-  if (!username || !password) {
-    alert("Username and password are required!");
-    return;
-  }
-  try {
-    const response = await fetch('https://cognito-idp.ap-south-1.amazonaws.com/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-amz-json-1.1',
-        'X-Amz-Target': 'AWSCognitoIdentityProviderService.InitiateAuth'
-      },
-      body: JSON.stringify({
-        AuthFlow: 'USER_PASSWORD_AUTH',
-        ClientId: COGNITO_CLIENT_ID,
-        AuthParameters: {
-          USERNAME: username,
-          PASSWORD: password
-        }
-      })
-    });
-    const data = await response.json();
-
-    if (data.AuthenticationResult) {
-      jwtToken = data.AuthenticationResult.AccessToken;
-      employeeId = username;
-      console.log("✅ Login successful!");
-      connect(); // Start the WebSocket connection
-    } else {
-      alert("Login failed: " + (data.message || "Invalid credentials"));
+function login() {
+  const hash = window.location.hash.substring(1);
+  const params = new URLSearchParams(hash);
+  if (params.has('access_token')) {
+    jwtToken = params.get('access_token');
+    const idToken = params.get('id_token');
+    if (idToken) {
+      const payload = JSON.parse(atob(idToken.split('.')[1]));
+      employeeId = payload['cognito:username'] || "Employee";
     }
-  } catch (error) {
-    console.error("Auth error:", error);
-    alert("Could not connect to Cognito.");
+    console.log("Login successfull! User:", employeeId);
+    window.location.hash = "";
+    connect();
+    } else {
+    const loginUrl = `https://${COGNITO_DOMAIN}/login?client_id=${COGNITO_CLIENT_ID}&response_type=token&scope=email+openid+profile&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+    window.location.href = loginUrl;
   }
 }
 function connect() {
