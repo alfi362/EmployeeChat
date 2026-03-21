@@ -9,7 +9,6 @@ function connect() {
   );
   socket.onopen = () => {
     console.log("Connected to " + channel);
-  };
   socket.send(JSON.stringify({
     action: "sendMessage",
     payload:{
@@ -17,6 +16,7 @@ function connect() {
       channelId: channel
     }
   }));
+};
   socket.onmessage = (event) => {
     try {
       let response = JSON.parse(event.data);
