@@ -8,7 +8,7 @@ def lambda_handler(event, context):
     try:
         connection_id = event['requestContext']['connectionId']
         queryparams=event.get('queryStringParameters') or {}
-        channel = queryparams.get('channel') or 'Engineering'
+        channel = queryparams.get('channel') or 'engineering'
         token=queryparams.get('token')
         if not token :
             print(f"no token provided")
