@@ -8,10 +8,12 @@ def lambda_handler(event, context):
         connection_id = event['requestContext']['connectionId']
         queryparams=event.get('queryStringParameters') or {}
         employee_id =queryparams.get('employee_id') or 'unknown_user'
+        channel = queryparams.get('channel') or 'Engineering'
         ttl_seconds = int(time.time()) + (24 * 60 * 60)
         item = {
             'connectionId': {'S': connection_id},
             'employeeId': {'S': employee_id},
+            'channel': {'S' : channel},
             'ttl': {'N': str(ttl_seconds)}
         }
         
