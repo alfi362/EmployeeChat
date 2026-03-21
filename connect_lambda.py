@@ -2,13 +2,23 @@ import json
 import boto3
 import time
 dynamodb = boto3.client('dynamodb', region_name='ap-south-1')
+cognito =boto3.client('cognito-idp',region_name='ap-south-1')
 def lambda_handler(event, context):
     print("Connecting")    
     try:
         connection_id = event['requestContext']['connectionId']
         queryparams=event.get('queryStringParameters') or {}
-        employee_id =queryparams.get('employee_id') or 'unknown_user'
         channel = queryparams.get('channel') or 'Engineering'
+        token=queryparams.get('token')
+        if not token :
+            print(f"no token provided")
+            return {'statuscode': 401,'body':'Unauthorised'}
+        try:
+            cognito_response = cognito.get_user(AccessToken=token)
+            employee_id=cognito_response['Username']
+        except Exception as e:
+            print(f"Invalid Token: {str(e)}")
+            return {'statusCode':401, 'body':'Unauthorized'}
         ttl_seconds = int(time.time()) + (24 * 60 * 60)
         item = {
             'connectionId': {'S': connection_id},
