@@ -1,12 +1,36 @@
-const employeeId = prompt("Enter your employee ID");
+const REDIRECT_URI = "https://d2ez74nu99mzlf.cloudfront.net"; 
+const COGNITO_DOMAIN = "ap-south-1lb9cexihr.auth.ap-south-1.amazoncognito.com";
+const COGNITO_CLIENT_ID = "29g4gnh2142vbf25b63qqon9mo";
 let channel = "engineering";
+let employeeId = "";
+let jwtToken = "";
 let socket;
+function login() {
+  const hash = window.location.hash.substring(1);
+  const params = new URLSearchParams(hash);
+  if (params.has('access_token')) {
+    jwtToken = params.get('access_token');
+    const idToken = params.get('id_token');
+    if (idToken) {
+      const payload = JSON.parse(atob(idToken.split('.')[1]));
+      employeeId = payload['cognito:username'] || "Employee";
+    }
+    console.log("Login successfull! User:", employeeId);
+    window.location.hash = "";
+    connect();
+  } else {
+    const loginUrl = `https://${COGNITO_DOMAIN}/login?client_id=${COGNITO_CLIENT_ID}&response_type=token&scope=email+openid+profile+aws.cognito.signin.user.admin&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+    window.location.href = loginUrl; 
+  }
+}
 function connect() {
   socket = new WebSocket(
-    "wss://xdqsbghjq4.execute-api.ap-south-1.amazonaws.com/dev?employee_id=" 
-    + employeeId + 
-    "&channel=" + channel
+    "wss://xdqsbghjq4.execute-api.ap-south-1.amazonaws.com/dev?token=" 
+    + jwtToken + 
+    "&channel=" + channel +
+    "&employeeId=" + employeeId 
   );
+
   socket.onopen = () => {
     console.log("Connected to " + channel);
   socket.send(JSON.stringify({
@@ -40,10 +64,10 @@ function connect() {
   };
 
   socket.onerror = (err) => {
-    console.error("⚠️ WebSocket error:", err);
+    console.error(" WebSocket error:", err);
   };
 }
-/* SEND MESSAGE (NO FAKE RESPONSE HERE) */
+/* SEND MESSAGE */
 function sendMessage() {
   const input = document.getElementById("msg");
   const message = input.value;
@@ -81,4 +105,4 @@ function switchChannel(newChannel) {
   document.getElementById("messages").innerHTML = "";
   if (socket) socket.close(); // reconnect with new channel
 }
-connect();
+login();
