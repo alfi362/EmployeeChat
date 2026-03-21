@@ -10,15 +10,13 @@ def lambda_handler(event, context):
         queryparams=event.get('queryStringParameters') or {}
         channel = queryparams.get('channel') or 'engineering'
         token=queryparams.get('token')
+        employee_id = queryparams.get('employeeId')
         if not token :
             print(f"no token provided")
-            return {'statusCode': 401,'body':'Unauthorised'}
-        try:
-            cognito_response = cognito.get_user(AccessToken=token)
-            employee_id=cognito_response['Username']
-        except Exception as e:
-            print(f"Invalid Token: {str(e)}")
-            return {'statusCode':401, 'body':'Unauthorized'}
+            return {'statusCode': 401,'body':'Unauthorised'}    
+        if not employee_id:
+            print(f"No employeeId provided")
+            return {'statusCode': 401, 'body': 'Unauthorized'}
         ttl_seconds = int(time.time()) + (24 * 60 * 60)
         item = {
             'connectionId': {'S': connection_id},

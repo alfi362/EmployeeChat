@@ -19,16 +19,17 @@ function login() {
     window.location.hash = "";
     connect();
     } else {
-    const loginUrl = `https://${COGNITO_DOMAIN}/login?client_id=${COGNITO_CLIENT_ID}&response_type=token&scope=email+openid+profile&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
-    window.location.href = loginUrl;
+    const loginUrl = `https://${COGNITO_DOMAIN}/login?client_id=${COGNITO_CLIENT_ID}&response_type=token&scope=email+openid+profile+aws.cognito.signin.user.admin&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
   }
 }
 function connect() {
   socket = new WebSocket(
     "wss://xdqsbghjq4.execute-api.ap-south-1.amazonaws.com/dev?token=" 
     + jwtToken + 
-    "&channel=" + channel
+    "&channel=" + channel +
+    "&employeeId=" + employeeId 
   );
+
   socket.onopen = () => {
     console.log("Connected to " + channel);
   socket.send(JSON.stringify({
@@ -65,7 +66,7 @@ function connect() {
     console.error(" WebSocket error:", err);
   };
 }
-/* SEND MESSAGE (NO FAKE RESPONSE HERE) */
+/* SEND MESSAGE */
 function sendMessage() {
   const input = document.getElementById("msg");
   const message = input.value;
