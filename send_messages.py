@@ -39,8 +39,9 @@ def lambda_handler(event, context):
         })
         for item in active_connections:              # Send messages to the connected ones in the websocket
             target_connection_id = item['connectionId']['S']
+            target_channel = item.get('channel',{}).get('S','engineering')
             
-            if target_connection_id != sender_connection_id:
+            if target_channel == channel_id and target_connection_id != sender_connection_id:
                 try:
                     apigw_client.post_to_connection(
                         ConnectionId=target_connection_id,
