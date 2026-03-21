@@ -18,8 +18,9 @@ function login() {
     console.log("Login successfull! User:", employeeId);
     window.location.hash = "";
     connect();
-    } else {
+  } else {
     const loginUrl = `https://${COGNITO_DOMAIN}/login?client_id=${COGNITO_CLIENT_ID}&response_type=token&scope=email+openid+profile+aws.cognito.signin.user.admin&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+    window.location.href = loginUrl; 
   }
 }
 function connect() {
