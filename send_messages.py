@@ -11,7 +11,31 @@ def lambda_handler(event, context):
         apigw_client = boto3.client('apigatewaymanagementapi', endpoint_url=f"https://{domain_name}/{stage}")
         body = json.loads(event.get('body', '{}'))
         payload = body.get('payload', {})
-        channel_id = payload.get('channelId',) or 'general'
+        channel_id = payload.get('channelId',) or 'engineering'
+        if payload.get('type') == 'getHistory':
+            print(f"fetching history for {channel_id}")
+            response = dynamodb.scan(
+                TableName='MessagesTable',
+                FilterExpression='channelId = :c',
+                ExpressionAttributeValues={':c':{'S': channel_id}}
+            )
+            items = response.get('Items',[])
+            items.sort(key=lambda x: int(x.get('timestamp',{}).get('N','0')))
+            recent_items= items[-50:]
+            history_data = []
+            for item in recent_items:
+                history_data.append({
+                    'sender': item.get('sender',{}).get('S','Anonymous'),
+                    'content': item.get('content',{}).get('S', '')
+                })
+            apigw_client.post_to_connection(
+                ConnectionId=sender_connection_id,
+                Data=json.dumps({
+                    "type": "chatHistory",
+                    "data": history_data
+                }).encode('utf-8')
+            )
+            return{'statusCode':200,'body':'History sent.'}
         content = payload.get('content', '')
         sender_name =payload.get('sender') or 'Anonymous'
         message_id = f"msg_{int(time.time() * 1000)}"

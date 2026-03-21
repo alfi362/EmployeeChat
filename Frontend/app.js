@@ -8,8 +8,15 @@ function connect() {
     "&channel=" + channel
   );
   socket.onopen = () => {
-    console.log("✅ Connected");
+    console.log("Connected to " + channel);
   };
+  socket.send(JSON.stringify({
+    action: "sendMessage",
+    payload:{
+      type:"getHistory",
+      channelId: channel
+    }
+  }));
   socket.onmessage = (event) => {
     try {
       let response = JSON.parse(event.data);
@@ -18,13 +25,17 @@ function connect() {
       if(response.type ==="chatMessage"){
         displayMessage(response.data.sender,response.data.content)
       }
+      if(response.type === "chatHistory"){
+        response.data.forEach(msg =>{
+          displayMessage(msg.sender,msg.content);
+        });
+      }
     } catch (e) {
       console.error("Error parsing message:", e);
     }
   };
-
   socket.onclose = () => {
-    console.log("❌ Disconnected... reconnecting in 3s");
+    console.log("Disconnected... reconnecting in 3s");
     setTimeout(connect, 3000);
   };
 
@@ -32,15 +43,11 @@ function connect() {
     console.error("⚠️ WebSocket error:", err);
   };
 }
-
 /* SEND MESSAGE (NO FAKE RESPONSE HERE) */
 function sendMessage() {
-
   const input = document.getElementById("msg");
   const message = input.value;
-
   if (!message) return;
-
   socket.send(JSON.stringify({
     action: "sendMessage",
     payload:{
@@ -52,7 +59,6 @@ function sendMessage() {
   displayMessage(employeeId,message)
   input.value = "";
 }
-
 /* DISPLAY MESSAGE */
 function displayMessage(sender, message) {
   const messagesDiv = document.getElementById("messages");
@@ -66,20 +72,13 @@ function displayMessage(sender, message) {
     msgDiv.innerHTML = `<strong>${sender}</strong><br>${message}`;
   }
   messagesDiv.appendChild(msgDiv);
-
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
-
 /* SWITCH CHANNEL */
 function switchChannel(newChannel) {
-
   channel = newChannel;
-
   document.getElementById("header").innerText = "# " + channel;
-
   document.getElementById("messages").innerHTML = "";
-
   if (socket) socket.close(); // reconnect with new channel
 }
-
 connect();
