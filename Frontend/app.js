@@ -1,7 +1,7 @@
 const REDIRECT_URI = "https://d2ez74nu99mzlf.cloudfront.net"; 
 const COGNITO_DOMAIN = "ap-south-1lb9cexihr.auth.ap-south-1.amazoncognito.com";
 const COGNITO_CLIENT_ID = "29g4gnh2142vbf25b63qqon9mo";
-let channel = "engineering";
+let channel = "open-channel";
 let employeeId = "";
 let jwtToken = "";
 let socket;
@@ -33,25 +33,24 @@ function connect() {
 
   socket.onopen = () => {
     console.log("Connected to " + channel);
-  socket.send(JSON.stringify({
-    action: "sendMessage",
-    payload:{
-      type:"getHistory",
-      channelId: channel
-    }
-  }));
-};
+    socket.send(JSON.stringify({
+      action: "sendMessage",
+      payload:{
+        type:"getHistory",
+        channelId: channel
+      }
+    }));
+  };
   socket.onmessage = (event) => {
     try {
       let response = JSON.parse(event.data);
-      console.log("recived:",response)
-      // Handle case where backend wraps response
-      if(response.type ==="chatMessage"){
-        displayMessage(response.data.sender,response.data.content)
+      console.log("received:", response);
+      if(response.type === "chatMessage"){
+        displayMessage(response.data.sender, response.data.content);
       }
       if(response.type === "chatHistory"){
         response.data.forEach(msg =>{
-          displayMessage(msg.sender,msg.content);
+          displayMessage(msg.sender, msg.content);
         });
       }
     } catch (e) {
@@ -62,9 +61,8 @@ function connect() {
     console.log("Disconnected... reconnecting in 3s");
     setTimeout(connect, 3000);
   };
-
   socket.onerror = (err) => {
-    console.error(" WebSocket error:", err);
+    console.error("WebSocket error:", err);
   };
 }
 /* SEND MESSAGE */
@@ -75,23 +73,22 @@ function sendMessage() {
   socket.send(JSON.stringify({
     action: "sendMessage",
     payload:{
-      channelId:channel,
-      content:message,
-      sender:employeeId
+      channelId: channel,
+      content: message,
+      sender: employeeId
     }
   }));
-  displayMessage(employeeId,message)
+  displayMessage(employeeId, message);
   input.value = "";
 }
 /* DISPLAY MESSAGE */
 function displayMessage(sender, message) {
   const messagesDiv = document.getElementById("messages");
   const msgDiv = document.createElement("div");
-  if(sender ===employeeId){
-    msgDiv.className="message my-message";
+  if(sender === employeeId){
+    msgDiv.className = "message my-message";
     msgDiv.innerHTML = `${message}`;
-  }
-  else{
+  } else {
     msgDiv.className = "message other-message";
     msgDiv.innerHTML = `<strong>${sender}</strong><br>${message}`;
   }
@@ -105,4 +102,19 @@ function switchChannel(newChannel) {
   document.getElementById("messages").innerHTML = "";
   if (socket) socket.close(); // reconnect with new channel
 }
+/* START NEW DIRECT MESSAGE */
+function startNewDM() {
+  const targetEmployee = prompt("Enter the Employee ID to chat with (e.g., emp_123):");
+  if (!targetEmployee || targetEmployee === employeeId) return;
+  const participants = [employeeId, targetEmployee].sort();
+  const dmChannelId = `dm_${participants[0]}_${participants[1]}`;
+  const dmList = document.getElementById("dm-list");
+  const newDmDiv = document.createElement("div");
+  newDmDiv.className = "channel";
+  newDmDiv.innerText = `@ ${targetEmployee}`;
+  newDmDiv.onclick = () => switchChannel(dmChannelId);
+  dmList.appendChild(newDmDiv);
+  switchChannel(dmChannelId);
+}
+
 login();
