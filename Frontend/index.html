@@ -9,15 +9,17 @@
 <div class="container">
   
   <!-- Sidebar -->
- <div class="sidebar">
+  <div class="sidebar">
     <h3>Company Channels</h3>
     <div class="channel" onclick="switchChannel('open-channel')"># open-channel</div>
     <div class="channel" onclick="switchChannel('hr')"># hr</div>
+
     <br>
+
     <h3>Direct Messages</h3>
     <div id="dm-list"></div>
-    <button onclick="startNewDM()" style="width: 100%; margin-top: 10px; background: #5865f2; color: white;
-     border: none; border-radius: 4px; padding: 8px; cursor: pointer;">
+
+    <button onclick="startNewDM()" class="dm-btn">
       + New DM
     </button>
   </div>
@@ -25,7 +27,10 @@
   <!-- Chat Area -->
   <div class="chat">
     
-    <div id="header" class="header"># engineering</div>
+    <div id="header" class="header">
+      <span># engineering</span>
+      <span id="status" class="status">🔴 Disconnected</span>
+    </div>
 
     <div id="messages" class="messages"></div>
 
