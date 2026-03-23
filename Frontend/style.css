@@ -1,6 +1,8 @@
 body {
   margin: 0;
-  font-family: Arial;
+  font-family: 'Inter', Arial, sans-serif;
+  background: #020617;
+  color: #e2e8f0;
 }
 
 .container {
@@ -10,23 +12,40 @@ body {
 
 /* Sidebar */
 .sidebar {
-  width: 220px;
-  background: #2f3136;
-  color: white;
+  width: 240px;
+  background: #1e293b;
   padding: 15px;
 }
 
+.sidebar h3 {
+  color: #94a3b8;
+}
+
 .channel {
-  padding: 8px;
-  cursor: pointer;
-  border-radius: 5px;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 5px;
+  transition: 0.2s;
 }
 
 .channel:hover {
-  background: #40444b;
+  background: #334155;
+  cursor: pointer;
 }
 
-/* Chat Area */
+/* DM Button */
+.dm-btn {
+  width: 100%;
+  margin-top: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+/* Chat */
 .chat {
   flex: 1;
   display: flex;
@@ -36,56 +55,71 @@ body {
 /* Header */
 .header {
   padding: 15px;
-  background: #eee;
-  font-weight: bold;
+  background: #0f172a;
+  border-bottom: 1px solid #334155;
+  display: flex;
+  justify-content: space-between;
 }
 
-/* Messages Container*/
+/* Status */
+.status {
+  font-size: 12px;
+}
+
+/* Messages */
 .messages {
   flex: 1;
-  padding: 10px;
-  overflow-y: scroll;
-  background: #f4f4f4;
+  padding: 15px;
+  overflow-y: auto;
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
-/* Message bubble */
+/* Message */
 .message {
-  margin: 8px 0;
-  padding: 8px;
-  background: white;
-  border-radius: 8px;
+  margin: 6px 0;
+  padding: 10px;
+  border-radius: 12px;
   max-width: 60%;
 }
 
 .my-message {
-  align-self: flex-start;
-  background-color: #dcf8c6; 
-  border-bottom-left-radius: 0px; 
-  border-bottom-right-radius: 8px;
+  align-self: flex-end;
+  background: #2563eb;
+  color: white;
 }
 
 .other-message {
-  align-self: flex-end;
-  background-color: white;
-  border-bottom-right-radius: 0px; 
-  border-bottom-left-radius: 8px;
+  align-self: flex-start;
+  background: #334155;
+}
+
+/* Timestamp */
+.timestamp {
+  font-size: 10px;
+  opacity: 0.6;
+  margin-top: 5px;
 }
 
 /* Input */
 .input-box {
   display: flex;
   padding: 10px;
-  background: #ddd;
+  background: #0f172a;
 }
 
 input {
   flex: 1;
   padding: 10px;
+  background: #1e293b;
+  border: none;
+  color: white;
 }
 
 button {
+  background: #2563eb;
+  color: white;
+  border: none;
   padding: 10px;
   cursor: pointer;
 }
