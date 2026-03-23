@@ -6,7 +6,7 @@ def lambda_handler(event, context):
         connection_id = event['requestContext']['connectionId']
         
         print(f"removing connection: {connection_id}")
-        dynamodb.delete_item(            #database deletion
+        dynamodb.delete_item( 
             TableName='ConnectionsTable',
             Key={
                 'connectionId': {'S': connection_id}
