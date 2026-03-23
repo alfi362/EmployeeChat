@@ -7,6 +7,8 @@ let employeeId = "";
 let jwtToken = "";
 let socket;
 
+const ANNOUNCEMENT_API_URL = ""; // keep blank
+
 function login() {
   const hash = window.location.hash.substring(1);
   const params = new URLSearchParams(hash);
@@ -20,12 +22,15 @@ function login() {
       employeeId = payload['cognito:username'] || "Employee";
     }
 
-    console.log("Login successfull! User:", employeeId);
+    if (employeeId === "admin" || employeeId === "hr") {
+      document.getElementById("hr-panel").style.display = "block";
+    }
+
     window.location.hash = "";
     connect();
 
   } else {
-    const loginUrl = `https://${COGNITO_DOMAIN}/login?client_id=${COGNITO_CLIENT_ID}&response_type=token&scope=email+openid+profile+aws.cognito.signin.user.admin&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+    const loginUrl = `https://${COGNITO_DOMAIN}/login?client_id=${COGNITO_CLIENT_ID}&response_type=token&scope=email+openid+profile&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
     window.location.href = loginUrl; 
   }
 }
@@ -39,7 +44,6 @@ function connect() {
   );
 
   socket.onopen = () => {
-    console.log("Connected to " + channel);
     document.getElementById("status").innerText = "🟢 Connected";
 
     socket.send(JSON.stringify({
@@ -52,37 +56,32 @@ function connect() {
   };
 
   socket.onmessage = (event) => {
-    try {
-      let response = JSON.parse(event.data);
-      console.log("received:", response);
+    let response = JSON.parse(event.data);
 
-      if(response.type === "chatMessage"){
-        displayMessage(response.data.sender, response.data.content);
-      }
+    if(response.type === "chatMessage"){
+      displayMessage(response.data.sender, response.data.content);
+    }
 
-      if(response.type === "chatHistory"){
-        response.data.forEach(msg =>{
-          displayMessage(msg.sender, msg.content);
-        });
-      }
+    if(response.type === "chatHistory"){
+      response.data.forEach(msg =>{
+        displayMessage(msg.sender, msg.content);
+      });
+    }
 
-    } catch (e) {
-      console.error("Error parsing message:", e);
+    // ✅ FIXED ANNOUNCEMENT HANDLER
+    if(response.type === "hr_announcement"){
+      const data = response.data ? response.data : response;
+      displayAnnouncement(data);
     }
   };
 
   socket.onclose = () => {
-    console.log("Disconnected... reconnecting in 3s");
     document.getElementById("status").innerText = "🔴 Disconnected";
     setTimeout(connect, 3000);
   };
-
-  socket.onerror = (err) => {
-    console.error("WebSocket error:", err);
-  };
 }
 
-/* SEND MESSAGE */
+/* SEND CHAT */
 function sendMessage() {
   const input = document.getElementById("msg");
   const message = input.value;
@@ -102,22 +101,56 @@ function sendMessage() {
   input.value = "";
 }
 
-/* DISPLAY MESSAGE */
+/* SEND ANNOUNCEMENT */
+function sendAnnouncement() {
+  const text = document.getElementById("announcementText").value;
+  const priority = document.getElementById("priority").value;
+
+  if (!text) return;
+
+  socket.send(JSON.stringify({
+    action: "sendMessage",
+    payload: {
+      type: "hr_announcement",
+      announcement: text,
+      priority: priority,
+      sender_id: employeeId
+    }
+  }));
+
+  document.getElementById("announcementText").value = "";
+}
+
+/* DISPLAY CHAT */
 function displayMessage(sender, message) {
   const messagesDiv = document.getElementById("messages");
   const msgDiv = document.createElement("div");
 
-  const time = new Date().toLocaleTimeString();
-
   if(sender === employeeId){
     msgDiv.className = "message my-message";
-    msgDiv.innerHTML = `${message}<div class="timestamp">${time}</div>`;
+    msgDiv.innerHTML = message;
   } else {
     msgDiv.className = "message other-message";
-    msgDiv.innerHTML = `<strong>${sender}</strong><br>${message}<div class="timestamp">${time}</div>`;
+    msgDiv.innerHTML = `<strong>${sender}</strong><br>${message}`;
   }
 
   messagesDiv.appendChild(msgDiv);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+/* DISPLAY ANNOUNCEMENT */
+function displayAnnouncement(data) {
+  const messagesDiv = document.getElementById("messages");
+
+  const div = document.createElement("div");
+
+  const priority = data.priority || "normal";
+  const text = data.announcement || "No message";
+
+  div.className = "announcement " + priority;
+  div.innerHTML = `📢 ${text}`;
+
+  messagesDiv.appendChild(div);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
@@ -130,10 +163,9 @@ function switchChannel(newChannel) {
   if (socket) socket.close();
 }
 
-/* START NEW DIRECT MESSAGE */
+/* NEW DM */
 function startNewDM() {
-  const targetEmployee = prompt("Enter the Employee ID to chat with (e.g., emp_123):");
-
+  const targetEmployee = prompt("Enter Employee ID:");
   if (!targetEmployee || targetEmployee === employeeId) return;
 
   const participants = [employeeId, targetEmployee].sort();
@@ -149,14 +181,5 @@ function startNewDM() {
   dmList.appendChild(newDmDiv);
   switchChannel(dmChannelId);
 }
-
-/* ENTER TO SEND */
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("msg").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") {
-      sendMessage();
-    }
-  });
-});
 
 login();
