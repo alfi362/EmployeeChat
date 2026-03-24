@@ -2,12 +2,10 @@ body {
   margin: 0;
   font-family: Arial;
 }
-
 .container {
   display: flex;
   height: 100vh;
 }
-
 /* Sidebar */
 .sidebar {
   width: 240px;
@@ -16,12 +14,14 @@ body {
   padding: 15px;
 }
 
+.sidebar h3 {
+  color: #94a3b8;
+}
 .channel {
   padding: 8px;
   cursor: pointer;
   border-radius: 5px;
 }
-
 .channel:hover {
   background: #334155;
 }
@@ -41,6 +41,7 @@ body {
   margin-bottom: 8px;
 }
 
+/* DM Button */
 .dm-btn {
   width: 100%;
   padding: 8px;
@@ -50,7 +51,6 @@ body {
   border-radius: 4px;
   cursor: pointer;
 }
-
 /* Chat */
 .chat {
   flex: 1;
@@ -58,6 +58,7 @@ body {
   flex-direction: column;
 }
 
+/* Header */
 .header {
   padding: 15px;
   background: #0f172a;
@@ -66,10 +67,10 @@ body {
   justify-content: space-between;
 }
 
+/* Status */
 .status {
   font-size: 12px;
 }
-
 /* Messages */
 .messages {
   flex: 1;
@@ -80,19 +81,18 @@ body {
   flex-direction: column;
 }
 
+/* Message */
 .message {
   margin: 8px 0;
   padding: 8px;
   border-radius: 8px;
   max-width: 60%;
 }
-
 .my-message {
   align-self: flex-end;
   background-color: #2563eb;
   color: white;
 }
-
 .other-message {
   align-self: flex-start;
   background-color: white;
@@ -117,16 +117,29 @@ body {
 .normal {
   background: #22c55e;
   color: black;
+/* Timestamp */
+.timestamp {
+  font-size: 10px;
+  opacity: 0.6;
+  margin-top: 5px;
 }
-
 /* Input */
 .input-box {
   display: flex;
   padding: 10px;
   background: #ddd;
 }
-
 input {
   flex: 1;
   padding: 10px;
+  background: #1e293b;
+  border: none;
+  color: white;
+}
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
 }

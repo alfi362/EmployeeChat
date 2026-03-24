@@ -5,20 +5,15 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <div class="container">
-  
   <!-- Sidebar -->
   <div class="sidebar">
     <h3>Company Channels</h3>
     <div class="channel" onclick="switchChannel('open-channel')"># open-channel</div>
     <div class="channel" onclick="switchChannel('hr')"># hr</div>
-
     <br>
-
     <h3>Direct Messages</h3>
     <div id="dm-list"></div>
-
     <button onclick="startNewDM()" class="dm-btn">
       + New DM
     </button>
@@ -40,26 +35,21 @@
     </div>
 
   </div>
-
   <!-- Chat Area -->
   <div class="chat">
-    
     <div id="header" class="header">
       <span># open-channel</span>
       <span id="status" class="status">🔴 Disconnected</span>
+      <span># engineering</span>
+      <span id="status" class="status">🔴Disconnected</span>
     </div>
-
     <div id="messages" class="messages"></div>
-
     <div class="input-box">
       <input type="text" id="msg" placeholder="Type message..." />
       <button onclick="sendMessage()">Send</button>
     </div>
-
   </div>
-
 </div>
-
 <script src="app.js"></script>
 </body>
 </html>
