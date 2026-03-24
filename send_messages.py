@@ -37,9 +37,9 @@ def lambda_handler(event, context):
             )
             return{'statusCode':200,'body':'History sent.'}
         content = payload.get('content', '')
-        sender_name =payload.get('sender') or 'Anonymous'
+        sender_name = payload.get('sender') or 'Anonymous'
         message_id = f"msg_{int(time.time() * 1000)}"
-        dynamodb.put_item(             #add messages to DB
+        dynamodb.put_item(
             TableName='MessagesTable',
             Item={
                 'messageId': {'S': message_id},
@@ -50,9 +50,8 @@ def lambda_handler(event, context):
             }
         )
         print(f"Saved message {message_id} to {channel_id}")
-        response = dynamodb.scan(TableName='ConnectionsTable')   #Read the active connections from the database
+        response = dynamodb.scan(TableName='ConnectionsTable')
         active_connections = response.get('Items', [])
-        
         outbound_message = json.dumps({
             "type": "chatMessage",
             "data": {
@@ -61,11 +60,10 @@ def lambda_handler(event, context):
                 "sender": sender_name
             }
         })
-        for item in active_connections:              # Send messages to the connected ones in the websocket
+        for item in active_connections:              
             target_connection_id = item['connectionId']['S']
-            target_channel = item.get('channel',{}).get('S','engineering')
             
-            if target_channel == channel_id and target_connection_id != sender_connection_id:
+            if target_connection_id != sender_connection_id:
                 try:
                     apigw_client.post_to_connection(
                         ConnectionId=target_connection_id,
@@ -73,7 +71,7 @@ def lambda_handler(event, context):
                     )
                 except Exception as e:
                     print(f"{target_connection_id} is Offline")                  
-        return {'statusCode': 200, 'body': 'Message sent.'}
+        return {'statusCode': 200, 'body': 'Message sent.'} 
     except Exception as e:
         print(f"Error sending message: {str(e)}")
         return {'statusCode': 500, 'body': 'Failed to send message.'}

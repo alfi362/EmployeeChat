@@ -6,7 +6,6 @@ body {
   display: flex;
   height: 100vh;
 }
-/* Sidebar */
 .sidebar {
   width: 240px;
   background: #1e293b;
@@ -25,8 +24,6 @@ body {
 .channel:hover {
   background: #334155;
 }
-
-/* HR panel */
 #announcementText {
   width: 100%;
   padding: 8px;
@@ -40,8 +37,6 @@ body {
   padding: 6px;
   margin-bottom: 8px;
 }
-
-/* DM Button */
 .dm-btn {
   width: 100%;
   padding: 8px;
@@ -51,14 +46,11 @@ body {
   border-radius: 4px;
   cursor: pointer;
 }
-/* Chat */
 .chat {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
-
-/* Header */
 .header {
   padding: 15px;
   background: #0f172a;
@@ -66,12 +58,9 @@ body {
   display: flex;
   justify-content: space-between;
 }
-
-/* Status */
 .status {
   font-size: 12px;
 }
-/* Messages */
 .messages {
   flex: 1;
   padding: 10px;
@@ -80,8 +69,6 @@ body {
   display: flex;
   flex-direction: column;
 }
-
-/* Message */
 .message {
   margin: 8px 0;
   padding: 8px;
@@ -97,8 +84,15 @@ body {
   align-self: flex-start;
   background-color: white;
 }
-
-/* Announcement */
+.badge {
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 10px;
+  float: right;
+  display: none;
+}
 .announcement {
   align-self: center;
   text-align: center;
@@ -108,23 +102,19 @@ body {
   margin: 10px auto;
   max-width: 70%;
 }
-
 .urgent {
   background: #ef4444;
   color: white;
 }
-
 .normal {
   background: #22c55e;
   color: black;
 }
-/* Timestamp */
 .timestamp {
   font-size: 10px;
   opacity: 0.6;
   margin-top: 5px;
 }
-/* Input */
 .input-box {
   display: flex;
   padding: 10px;

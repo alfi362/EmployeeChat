@@ -8,10 +8,13 @@
 <div class="container">
   <!-- Sidebar -->
   <div class="sidebar">
-    <h3>Company Channels</h3>
-    <div class="channel" onclick="switchChannel('open-channel')"># open-channel</div>
-    <div class="channel" onclick="switchChannel('hr')"># hr</div>
-    <br>
+   <h3>Company Channels</h3>
+    <div class="channel" onclick="switchChannel('open-channel')">
+      # open-channel <span id="badge-open-channel" class="badge">0</span>
+    </div>
+    <div class="channel" onclick="switchChannel('engineering')">
+      # Hr <span id="badge-Hr" class="badge">0</span>
+    </div>
     <h3>Direct Messages</h3>
     <div id="dm-list"></div>
     <button onclick="startNewDM()" class="dm-btn">
@@ -39,7 +42,7 @@
   <div class="chat">
     <div id="header" class="header">
       <span id="channel-title"># open-channel</span>
-      <span id="status" class="status">🔴 Disconnected</span>
+      <span id="status" class="status">Disconnected</span>
     </div>
     <div id="messages" class="messages"></div>
     <div class="input-box">

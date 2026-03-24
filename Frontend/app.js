@@ -5,6 +5,8 @@ let channel = "open-channel";
 let employeeId = "";
 let jwtToken = "";
 let socket;
+let retryAttempt = 0;
+let unreadCounts = {};
 const ANNOUNCEMENT_API_URL = "https://k35rf4mxb3wulnwbotwr5plzde0boygy.lambda-url.ap-south-1.on.aws/"; 
 function login() {
   const hash = window.location.hash.substring(1);
@@ -33,7 +35,8 @@ function connect() {
     + jwtToken + "&channel=" + channel + "&employeeId=" + employeeId 
   );
   socket.onopen = () => {
-    document.getElementById("status").innerText = "🟢 Connected";
+    retryAttempt = 0;
+    document.getElementById("status").innerText = "Connected";
     socket.send(JSON.stringify({
       action: "sendMessage",
       payload: { type: "getHistory", channelId: channel }
@@ -43,10 +46,19 @@ function connect() {
     try {
       let response = JSON.parse(event.data);
       console.log("received:", response);
-
       if (response.type === "chatMessage") {
-        displayMessage(response.data.sender, response.data.content);
-      } 
+        const msgChannel = response.data.channelId;
+        if (msgChannel === channel) {
+            displayMessage(response.data.sender, response.data.content);
+        } else {
+            unreadCounts[msgChannel] = (unreadCounts[msgChannel] || 0) + 1;
+            const badge = document.getElementById("badge-" + msgChannel);
+            if (badge) {
+                badge.innerText = unreadCounts[msgChannel];
+                badge.style.display = "inline-block";
+            }
+        }
+      }
       else if (response.type === "chatHistory") {
         response.data.forEach(msg => {
           displayMessage(msg.sender, msg.content);
@@ -60,14 +72,14 @@ function connect() {
     }
   }
   socket.onclose = () => {
-    document.getElementById("status").innerText = "🔴 Disconnected";
-    setTimeout(connect, 3000);
-  };
-  socket.onerror = (err) => {
-    console.error("WebSocket error:", err);
+    document.getElementById("status").innerText = "Disconnected";
+    let timeout = Math.pow(2, retryAttempt) * 3000;
+    if (timeout > 30000) timeout = 30000;
+    console.log(`Reconnecting in ${timeout/1000} seconds...`);
+    setTimeout(connect, timeout);
+    retryAttempt++;
   };
 }
-/* SEND MESSAGE */
 function sendMessage() {
   const input = document.getElementById("msg");
   const message = input.value;
@@ -79,7 +91,6 @@ function sendMessage() {
   displayMessage(employeeId, message);
   input.value = "";
 }
-/* SEND ANNOUNCEMENT TO LAMBDA (FIXED) */
 async function sendAnnouncement() {
   const text = document.getElementById("announcementText").value;
   const priority = document.getElementById("priority").value;
@@ -125,7 +136,7 @@ function displayAnnouncement(data) {
   const priority = data.priority || "normal";
   const text = data.announcement || "No message";
   div.className = "announcement " + priority;
-  div.innerHTML = `📢 ${text}`;
+  div.innerHTML = `${text}`;
   messagesDiv.appendChild(div);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
@@ -134,9 +145,14 @@ function switchChannel(newChannel) {
   channel = newChannel;
   document.getElementById("channel-title").innerText = "# " + channel;
   document.getElementById("messages").innerHTML = "";
+  unreadCounts[channel] = 0;
+  const badge = document.getElementById("badge-" + channel);
+  if (badge) {
+      badge.style.display = "none";
+      badge.innerText = "0";
+  }
   if (socket) socket.close();
 }
-/* START NEW DM */
 function startNewDM() {
   const targetEmployee = prompt("Enter the Employee ID to chat with (e.g., emp_123):");
   if (!targetEmployee || targetEmployee === employeeId) return;
@@ -151,7 +167,6 @@ function startNewDM() {
   switchChannel(dmChannelId);
 }
 
-/* ENTER TO SEND */
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("msg").addEventListener("keypress", function(e) {
     if (e.key === "Enter") {
