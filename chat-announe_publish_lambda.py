@@ -1,7 +1,7 @@
 import json
 import boto3
 sns = boto3.client('sns', region_name='ap-south-1')
-SNS_TOPIC_ARN = 'arn:aws:sns:ap-south-1:767398007951:CompanyAnnouncements'
+SNS_TOPIC_ARN = 'arn:aws:sns:ap-south-1:767398007951:ChatApp'
 ALLOWED_ADMINS = ['admin', 'hr_manager']
 def lambda_handler(event, context):
     print("Received HR Announcement Request")
@@ -9,7 +9,8 @@ def lambda_handler(event, context):
         body = json.loads(event.get('body', '{}'))
         announcement = body.get('announcement')
         priority = body.get('priority', 'normal')
-        sender_id = body.get('sender_id') 
+        sender_id = body.get('sender_id')
+        
         if sender_id not in ALLOWED_ADMINS:
             return {
                 'statusCode': 403, 
