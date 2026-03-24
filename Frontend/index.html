@@ -17,10 +17,29 @@
     <button onclick="startNewDM()" class="dm-btn">
       + New DM
     </button>
+
+    <!-- HR PANEL -->
+    <div id="hr-panel" style="display:none; margin-top:20px;">
+      <h3>HR Announcements</h3>
+
+      <textarea id="announcementText" placeholder="Type announcement..."></textarea>
+
+      <select id="priority">
+        <option value="normal">Normal</option>
+        <option value="urgent">Urgent</option>
+      </select>
+
+      <button onclick="sendAnnouncement()" class="dm-btn">
+        Send Announcement
+      </button>
+    </div>
+
   </div>
   <!-- Chat Area -->
   <div class="chat">
     <div id="header" class="header">
+      <span># open-channel</span>
+      <span id="status" class="status">🔴 Disconnected</span>
       <span># engineering</span>
       <span id="status" class="status">🔴Disconnected</span>
     </div>
